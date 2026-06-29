@@ -58,6 +58,23 @@ export function getTemplates(): Promise<Template[]> {
   return fetchCollection<Template>("/public/invitation-templates");
 }
 
+export type PublicStats = { couples: number };
+
+/** Headline platform stats for the landing page (e.g. total couples). */
+export async function getStats(): Promise<PublicStats> {
+  try {
+    const res = await fetch(`${API_URL}/public/stats`, {
+      headers: { Accept: "application/json" },
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) return { couples: 0 };
+    const json = (await res.json()) as { data?: Partial<PublicStats> };
+    return { couples: Number(json.data?.couples ?? 0) };
+  } catch {
+    return { couples: 0 };
+  }
+}
+
 /** Format a package price using its currency (no trailing cents). */
 export function formatPrice(price: number | null, currency: string): string {
   if (price === null) return "Custom";

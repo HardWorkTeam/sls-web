@@ -4,6 +4,7 @@ import {
   featuredPackageId,
   formatPrice,
   getPackages,
+  getStats,
   getTemplates,
 } from "./lib/catalog";
 import { LOGIN_URL, REGISTER_URL, templatePreviewUrl } from "./site-config";
@@ -97,11 +98,25 @@ function Check() {
 }
 
 export default async function Home() {
-  const [packages, templates] = await Promise.all([
+  const [packages, templates, stats] = await Promise.all([
     getPackages(),
     getTemplates(),
+    getStats(),
   ]);
   const featuredId = featuredPackageId(packages);
+
+  // Hero social-proof stats. The couples count comes from the live platform;
+  // if it's unavailable (0), fall back to a generic "effortless dashboard" stat.
+  const heroStats: [string, string][] = [
+    [String(FEATURES.length), "Planning tools"],
+    [
+      templates.length > 0 ? String(templates.length) : "6",
+      "Designer templates",
+    ],
+    stats.couples > 0
+      ? [`${stats.couples.toLocaleString()}+`, "Couples"]
+      : ["1", "Effortless dashboard"],
+  ];
 
   return (
     <div id="top" className="flex flex-1 flex-col">
@@ -154,16 +169,11 @@ export default async function Home() {
 
             {/* Stats */}
             <div className="mt-16 grid w-full max-w-2xl grid-cols-3 gap-6 border-t border-line pt-10">
-              {[
-                [String(FEATURES.length), "Planning tools"],
-                [
-                  templates.length > 0 ? String(templates.length) : "6",
-                  "Designer templates",
-                ],
-                ["1", "Effortless dashboard"],
-              ].map(([num, label]) => (
+              {heroStats.map(([num, label]) => (
                 <div key={label}>
-                  <div className={`${BRAND_TEXT_GRADIENT} font-serif text-3xl font-semibold sm:text-4xl`}>
+                  <div
+                    className={`${BRAND_TEXT_GRADIENT} font-serif text-3xl font-semibold sm:text-4xl`}
+                  >
                     {num}
                   </div>
                   <div className="mt-1 text-sm text-muted">{label}</div>
@@ -334,7 +344,9 @@ export default async function Home() {
                       }`}
                     >
                       {featured && (
-                        <span className={`${BRAND_GRADIENT} absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-xs font-semibold text-white`}>
+                        <span
+                          className={`${BRAND_GRADIENT} absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-xs font-semibold text-white`}
+                        >
                           Most popular
                         </span>
                       )}
