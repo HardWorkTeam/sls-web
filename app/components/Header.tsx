@@ -9,7 +9,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-line/80 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5 sm:px-8">
-        <a href="#top" className="flex items-center gap-2.5">
+        <a href="/" className="flex items-center gap-2.5">
           <img
             src="/srolanh-logo.png"
             alt="Srolanh"
