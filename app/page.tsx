@@ -8,6 +8,10 @@ import {
 } from "./lib/catalog";
 import { LOGIN_URL, REGISTER_URL, templatePreviewUrl } from "./site-config";
 
+// Signature brand gradient (green → yellow), expressed with Tailwind utilities.
+const BRAND_GRADIENT = "bg-linear-to-r from-emerald via-[#2f7a57] to-gold";
+const BRAND_TEXT_GRADIENT = `${BRAND_GRADIENT} bg-clip-text text-transparent`;
+
 const FEATURES = [
   {
     title: "Digital Invitations",
@@ -120,7 +124,10 @@ export default async function Home() {
             </span>
             <h1 className="max-w-3xl font-serif text-4xl font-semibold leading-[1.1] tracking-tight text-foreground sm:text-6xl">
               Your wedding,{" "}
-              <span className="text-emerald italic">beautifully</span> managed.
+              <span className={`${BRAND_TEXT_GRADIENT} italic`}>
+                beautifully
+              </span>{" "}
+              managed.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-8 text-muted">
               From the first invitation to the final thank-you, Srolanh brings
@@ -130,7 +137,7 @@ export default async function Home() {
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <a
                 href={REGISTER_URL}
-                className="rounded-full bg-emerald px-7 py-3.5 text-base font-medium text-white shadow-md transition-colors hover:bg-emerald-deep"
+                className={`${BRAND_GRADIENT} rounded-full px-7 py-3.5 text-base font-medium text-white shadow-md transition-opacity hover:opacity-90`}
               >
                 Plan your wedding free
               </a>
@@ -156,7 +163,7 @@ export default async function Home() {
                 ["1", "Effortless dashboard"],
               ].map(([num, label]) => (
                 <div key={label}>
-                  <div className="font-serif text-3xl font-semibold text-emerald sm:text-4xl">
+                  <div className={`${BRAND_TEXT_GRADIENT} font-serif text-3xl font-semibold sm:text-4xl`}>
                     {num}
                   </div>
                   <div className="mt-1 text-sm text-muted">{label}</div>
@@ -327,7 +334,7 @@ export default async function Home() {
                       }`}
                     >
                       {featured && (
-                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gold px-3 py-1 text-xs font-semibold text-emerald-deep">
+                        <span className={`${BRAND_GRADIENT} absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-xs font-semibold text-white`}>
                           Most popular
                         </span>
                       )}
@@ -369,10 +376,10 @@ export default async function Home() {
                       </ul>
                       <a
                         href={REGISTER_URL}
-                        className={`mt-7 rounded-full px-5 py-3 text-center text-sm font-medium transition-colors ${
+                        className={`mt-7 rounded-full px-5 py-3 text-center text-sm font-medium transition-opacity ${
                           featured
                             ? "bg-white text-emerald hover:bg-gold-soft"
-                            : "bg-emerald text-white hover:bg-emerald-deep"
+                            : `${BRAND_GRADIENT} text-white hover:opacity-90`
                         }`}
                       >
                         {isFree ? "Start for free" : `Choose ${p.name}`}

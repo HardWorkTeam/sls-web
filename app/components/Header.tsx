@@ -39,7 +39,7 @@ export default function Header() {
           </a>
           <a
             href={REGISTER_URL}
-            className="rounded-full bg-emerald px-5 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-emerald-deep"
+            className="rounded-full bg-linear-to-r from-emerald via-[#2f7a57] to-gold px-5 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90"
           >
             Get started
           </a>
@@ -101,7 +101,7 @@ export default function Header() {
               </a>
               <a
                 href={REGISTER_URL}
-                className="rounded-full bg-emerald px-5 py-2.5 text-center text-sm font-medium text-white"
+                className="rounded-full bg-linear-to-r from-emerald via-[#2f7a57] to-gold px-5 py-2.5 text-center text-sm font-medium text-white"
               >
                 Get started
               </a>
