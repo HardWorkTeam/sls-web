@@ -257,6 +257,7 @@ export default async function Home() {
                         src={templatePreviewUrl(t.slug)}
                         title={t.name}
                         ratio={4 / 3}
+                        accentColor={t.config?.primary_color}
                       />
                       {/* Hover affordance — the thumbnail itself is inert */}
                       <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100">
