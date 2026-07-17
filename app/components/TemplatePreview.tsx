@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 /**
  * Renders an invitation-template thumbnail for the landing-page grid.
@@ -22,6 +22,17 @@ import { useEffect, useRef, useState } from "react";
  * The poster always renders underneath, so it also covers the iframe's load time.
  */
 const DESIGN_WIDTH = 1280; // logical px the iframe is rendered at before scaling
+const EMBED_QUERY = "(hover: hover) and (pointer: fine)";
+
+function subscribeToEmbedCapability(onChange: () => void) {
+  const media = window.matchMedia(EMBED_QUERY);
+  media.addEventListener("change", onChange);
+  return () => media.removeEventListener("change", onChange);
+}
+
+function getEmbedCapability() {
+  return window.matchMedia(EMBED_QUERY).matches;
+}
 
 export default function TemplatePreview({
   src,
@@ -38,16 +49,13 @@ export default function TemplatePreview({
   const [scale, setScale] = useState(0.27);
   const [loaded, setLoaded] = useState(false);
   const [inView, setInView] = useState(false);
-  // Whether this device can afford a live-app iframe. Defaults to false so the
-  // server render (and mobile) never emit one; flipped on after mount only for
-  // pointer-capable devices, which avoids a hydration mismatch too.
-  const [canEmbed, setCanEmbed] = useState(false);
-
-  useEffect(() => {
-    setCanEmbed(
-      window.matchMedia("(hover: hover) and (pointer: fine)").matches,
-    );
-  }, []);
+  // Whether this device can afford a live-app iframe. The server snapshot is
+  // false, so mobile/SSR never emit one and hydration remains stable.
+  const canEmbed = useSyncExternalStore(
+    subscribeToEmbedCapability,
+    getEmbedCapability,
+    () => false,
+  );
 
   useEffect(() => {
     const el = containerRef.current;

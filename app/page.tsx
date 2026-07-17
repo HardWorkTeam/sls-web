@@ -1,5 +1,6 @@
 import Header from "./components/Header";
 import TemplatePreview from "./components/TemplatePreview";
+import Image from "next/image";
 import {
   featuredPackageId,
   formatPrice,
@@ -440,9 +441,11 @@ export default async function Home() {
       <footer className="border-t border-line bg-card/40">
         <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-6 px-5 py-10 sm:flex-row sm:px-8">
           <div className="flex items-center gap-2.5">
-            <img
+            <Image
               src="/srolanh-logo.png"
               alt="Srolanh"
+              width={96}
+              height={64}
               className="h-auto w-24 object-contain"
             />
             <span className="text-sm text-muted">

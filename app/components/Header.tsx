@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { LOGIN_URL, NAV_LINKS, REGISTER_URL } from "../site-config";
 
 export default function Header() {
@@ -9,13 +11,16 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-line/80 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5 sm:px-8">
-        <a href="/" className="flex items-center gap-2.5">
-          <img
+        <Link href="/" className="flex items-center gap-2.5">
+          <Image
             src="/srolanh-logo.png"
             alt="Srolanh"
+            width={96}
+            height={64}
             className="h-auto w-24 object-contain"
+            priority
           />
-        </a>
+        </Link>
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-8 md:flex">
