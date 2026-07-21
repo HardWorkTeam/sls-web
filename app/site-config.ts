@@ -21,6 +21,8 @@ export const templatePreviewUrl = (slug: string) =>
 
 export const LOGIN_URL = `${APP_URL}/`;
 export const REGISTER_URL = `${APP_URL}/register`;
+/** Where signed-in couples land when they click through from the marketing site. */
+export const DASHBOARD_URL = `${APP_URL}/my-wedding`;
 
 export const NAV_LINKS = [
   { href: "#features", label: "Features" },

@@ -3,10 +3,18 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { LOGIN_URL, NAV_LINKS, REGISTER_URL } from "../site-config";
+import {
+  DASHBOARD_URL,
+  LOGIN_URL,
+  NAV_LINKS,
+  REGISTER_URL,
+} from "../site-config";
+import { useSession } from "../use-session";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const session = useSession();
+  const firstName = session.name?.trim().split(/\s+/)[0] ?? null;
 
   return (
     <header className="sticky top-0 z-50 border-b border-line/80 bg-background/80 backdrop-blur-md">
@@ -36,18 +44,36 @@ export default function Header() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <a
-            href={LOGIN_URL}
-            className="text-sm font-medium text-foreground transition-colors hover:text-emerald"
-          >
-            Log in
-          </a>
-          <a
-            href={REGISTER_URL}
-            className="rounded-full bg-linear-to-r from-emerald via-[#2f7a57] to-gold px-5 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90"
-          >
-            Get started
-          </a>
+          {session.signedIn ? (
+            <>
+              {firstName && (
+                <span className="text-sm font-medium text-muted">
+                  Hi, {firstName}
+                </span>
+              )}
+              <a
+                href={DASHBOARD_URL}
+                className="rounded-full bg-linear-to-r from-emerald via-[#2f7a57] to-gold px-5 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90"
+              >
+                Go to dashboard
+              </a>
+            </>
+          ) : (
+            <>
+              <a
+                href={LOGIN_URL}
+                className="text-sm font-medium text-foreground transition-colors hover:text-emerald"
+              >
+                Log in
+              </a>
+              <a
+                href={REGISTER_URL}
+                className="rounded-full bg-linear-to-r from-emerald via-[#2f7a57] to-gold px-5 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90"
+              >
+                Get started
+              </a>
+            </>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -98,18 +124,36 @@ export default function Header() {
               </a>
             ))}
             <div className="mt-2 flex flex-col gap-2 border-t border-line pt-4">
-              <a
-                href={LOGIN_URL}
-                className="rounded-full border border-line px-5 py-2.5 text-center text-sm font-medium text-foreground"
-              >
-                Log in
-              </a>
-              <a
-                href={REGISTER_URL}
-                className="rounded-full bg-linear-to-r from-emerald via-[#2f7a57] to-gold px-5 py-2.5 text-center text-sm font-medium text-white"
-              >
-                Get started
-              </a>
+              {session.signedIn ? (
+                <>
+                  {firstName && (
+                    <span className="px-3 pb-1 text-sm font-medium text-muted">
+                      Hi, {firstName}
+                    </span>
+                  )}
+                  <a
+                    href={DASHBOARD_URL}
+                    className="rounded-full bg-linear-to-r from-emerald via-[#2f7a57] to-gold px-5 py-2.5 text-center text-sm font-medium text-white"
+                  >
+                    Go to dashboard
+                  </a>
+                </>
+              ) : (
+                <>
+                  <a
+                    href={LOGIN_URL}
+                    className="rounded-full border border-line px-5 py-2.5 text-center text-sm font-medium text-foreground"
+                  >
+                    Log in
+                  </a>
+                  <a
+                    href={REGISTER_URL}
+                    className="rounded-full bg-linear-to-r from-emerald via-[#2f7a57] to-gold px-5 py-2.5 text-center text-sm font-medium text-white"
+                  >
+                    Get started
+                  </a>
+                </>
+              )}
             </div>
           </nav>
         </div>
