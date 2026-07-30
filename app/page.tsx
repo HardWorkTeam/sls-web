@@ -442,7 +442,7 @@ export default async function Home() {
         <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-6 px-5 py-10 sm:flex-row sm:px-8">
           <div className="flex items-center gap-2.5">
             <Image
-              src="/srolanh-logo.png"
+              src="/srolanh-logo.webp"
               alt="Srolanh"
               width={96}
               height={64}

@@ -21,7 +21,7 @@ export default function Header() {
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5 sm:px-8">
         <Link href="/" className="flex items-center gap-2.5">
           <Image
-            src="/srolanh-logo.png"
+            src="/srolanh-logo.webp"
             alt="Srolanh"
             width={96}
             height={64}
