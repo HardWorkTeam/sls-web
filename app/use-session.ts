@@ -2,9 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { APP_URL } from "./site-config";
+import {
+  readWebSessionHint,
+  shouldStartMarketingSync,
+  startMarketingSync,
+} from "./web-session-hint";
 
 const COOKIE_NAME = "sls_session";
-const IFRAME_TIMEOUT_MS = 8_000;
 
 export interface SessionState {
   signedIn: boolean;
@@ -31,94 +35,38 @@ function isSameHostname(appUrl: string): boolean {
   }
 }
 
-/**
- * Hidden iframe on the portal origin (first-party there). postMessage back to
- * sls-web works when credentialed fetch cannot send third-party cookies between
- * sibling *.vercel.app hosts.
- */
-function fetchSessionViaIframe(appUrl: string): Promise<SessionState> {
-  return new Promise((resolve) => {
-    let portalOrigin: string;
-    try {
-      portalOrigin = new URL(appUrl).origin;
-    } catch {
-      resolve(SIGNED_OUT);
-      return;
-    }
-
-    const iframe = document.createElement("iframe");
-    iframe.hidden = true;
-    iframe.title = "Session check";
-    iframe.src = `${appUrl.replace(/\/$/, "")}/embed/session-status`;
-
-    const cleanup = () => {
-      window.clearTimeout(timeout);
-      window.removeEventListener("message", onMessage);
-      iframe.remove();
-    };
-
-    const timeout = window.setTimeout(() => {
-      cleanup();
-      resolve(SIGNED_OUT);
-    }, IFRAME_TIMEOUT_MS);
-
-    const onMessage = (event: MessageEvent) => {
-      if (event.origin !== portalOrigin) return;
-      const data = event.data as {
-        type?: string;
-        signedIn?: boolean;
-        name?: string | null;
-      };
-      if (data?.type !== "sls-session") return;
-
-      cleanup();
-      resolve({
-        signedIn: Boolean(data.signedIn),
-        name: typeof data.name === "string" ? data.name : null,
-      });
-    };
-
-    window.addEventListener("message", onMessage);
-    document.body.appendChild(iframe);
-  });
-}
-
-async function resolveSession(): Promise<SessionState> {
+function resolveSession(): SessionState {
   const local = readSessionCookie();
   if (local.signedIn) return local;
 
-  if (typeof window === "undefined" || isSameHostname(APP_URL)) {
-    return local;
+  const hint = readWebSessionHint();
+  if (hint) return hint;
+
+  if (typeof window !== "undefined" && !isSameHostname(APP_URL)) {
+    if (shouldStartMarketingSync()) {
+      startMarketingSync(APP_URL);
+    }
   }
 
-  return fetchSessionViaIframe(APP_URL);
+  return SIGNED_OUT;
 }
 
 /**
  * Reflects whether a couple is signed into the portal.
  *
  * - localhost / custom parent domain: reads the shared `sls_session` cookie.
- * - sibling *.vercel.app hosts: hidden iframe + postMessage (third-party
- *   cookies are blocked, so credentialed fetch to /api/session-marker cannot
- *   see the portal cookie).
+ * - sibling *.vercel.app hosts: one-time redirect through the portal's
+ *   /auth/marketing-sync (third-party iframe/fetch cannot read portal storage).
  */
 export function useSession(): SessionState {
   const [session, setSession] = useState<SessionState>(SIGNED_OUT);
 
   useEffect(() => {
-    let cancelled = false;
-    const sync = async () => {
-      const next = await resolveSession();
-      if (!cancelled) setSession(next);
-    };
+    setSession(resolveSession());
 
-    void sync();
-    const onFocus = () => void sync();
+    const onFocus = () => setSession(resolveSession());
     window.addEventListener("focus", onFocus);
-    return () => {
-      cancelled = true;
-      window.removeEventListener("focus", onFocus);
-    };
+    return () => window.removeEventListener("focus", onFocus);
   }, []);
 
   return session;
