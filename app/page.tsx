@@ -61,19 +61,20 @@ const STEPS = [
   {
     n: "01",
     title: "Create your wedding",
-    desc: "Sign up, add your names and your date. Your couple portal is ready in seconds.",
+    desc: "Register your account and enter your wedding details to set up your couple portal.",
   },
   {
     n: "02",
-    title: "Design & invite",
-    desc: "Pick a template, personalise it, and share your digital invitation with guests.",
+    title: "Choose your plan",
+    desc: "Select the package that fits your celebration and complete payment to unlock your tools.",
   },
   {
     n: "03",
-    title: "Manage every detail",
-    desc: "Track RSVPs, plan seating, log gifts and expenses — all from one dashboard.",
+    title: "Design & manage",
+    desc: "Customise your digital invitation, track RSVPs, plan seating, and log gifts.",
   },
 ];
+
 
 function titleCase(value?: string): string {
   if (!value) return "";
