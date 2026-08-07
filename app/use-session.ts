@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { APP_URL } from "./site-config";
 import {
+  clearWebSessionHint,
   readWebSessionHint,
   shouldStartMarketingSync,
   startMarketingSync,
+  writeWebSessionHint,
 } from "./web-session-hint";
 
 const COOKIE_NAME = "sls_session";
@@ -51,6 +53,18 @@ function resolveSession(): SessionState {
   return SIGNED_OUT;
 }
 
+async function fetchSessionStatus(): Promise<SessionState | null> {
+  try {
+    const res = await fetch(`${APP_URL}/api/session-marker`, {
+      credentials: "include",
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Reflects whether a couple is signed into the portal.
  *
@@ -62,11 +76,40 @@ export function useSession(): SessionState {
   const [session, setSession] = useState<SessionState>(SIGNED_OUT);
 
   useEffect(() => {
-    setSession(resolveSession());
+    // 1. Resolve initial state synchronously from cookies/localStorage hint
+    const initial = resolveSession();
+    setSession(initial);
 
-    const onFocus = () => setSession(resolveSession());
+    // 2. Perform background validation against the portal's API to ensure the hint isn't stale
+    let active = true;
+
+    const validateSession = async (current: SessionState) => {
+      const status = await fetchSessionStatus();
+      if (!active || !status) return;
+
+      if (status.signedIn !== current.signedIn || status.name !== current.name) {
+        setSession(status);
+        if (status.signedIn) {
+          writeWebSessionHint(status);
+        } else {
+          clearWebSessionHint();
+        }
+      }
+    };
+
+    validateSession(initial);
+
+    const onFocus = () => {
+      const current = resolveSession();
+      setSession(current);
+      validateSession(current);
+    };
+
     window.addEventListener("focus", onFocus);
-    return () => window.removeEventListener("focus", onFocus);
+    return () => {
+      active = false;
+      window.removeEventListener("focus", onFocus);
+    };
   }, []);
 
   return session;
