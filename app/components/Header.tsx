@@ -15,7 +15,11 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-line/80 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5 sm:px-8">
-        <Link href="/" className="flex items-center gap-2.5">
+        <Link 
+          href="/" 
+          className="flex items-center gap-2.5"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        >
           <Image
             src="/srolanh-logo.webp"
             alt="Srolanh"
