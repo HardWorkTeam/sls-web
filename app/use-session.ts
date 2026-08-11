@@ -42,9 +42,32 @@ function resolveSession(): SessionState {
   if (local.signedIn) return local;
 
   const hint = readWebSessionHint();
-  if (hint) return hint;
 
-  if (typeof window !== "undefined" && !isSameHostname(APP_URL)) {
+  // On same-hostname setups (shared cookie domain), if the cookie is absent
+  // the user is signed out — the hint may be stale. Clear it immediately.
+  if (typeof window !== "undefined" && isSameHostname(APP_URL)) {
+    if (hint?.signedIn) {
+      // Cookie is gone (logout cleared it) but hint still says signed-in: clear.
+      clearWebSessionHint();
+    }
+    // No valid cookie → signed out regardless of hint.
+    return SIGNED_OUT;
+  }
+
+  // Cross-origin (*.vercel.app): cookie isn't shared, rely on hint + sync.
+  if (hint?.signedIn) {
+    // We have a signedIn:true hint but no cookie. Trigger a fresh marketing
+    // sync so we re-verify. Don't show the stale name; return SIGNED_OUT
+    // optimistically — the sync will restore the name if still signed in.
+    if (shouldStartMarketingSync()) {
+      startMarketingSync(APP_URL);
+    }
+    return SIGNED_OUT;
+  }
+
+  if (hint) return hint; // hint.signedIn === false — safe to trust
+
+  if (typeof window !== "undefined") {
     if (shouldStartMarketingSync()) {
       startMarketingSync(APP_URL);
     }

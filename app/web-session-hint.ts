@@ -40,7 +40,12 @@ export function clearWebSessionHint(): void {
 export function shouldStartMarketingSync(): boolean {
   if (typeof window === "undefined") return false;
   if (window.location.pathname.startsWith("/auth/synced")) return false;
-  return readWebSessionHint() === null;
+  const hint = readWebSessionHint();
+  // No hint at all: always sync to establish initial state.
+  // A signedIn:true hint may be stale (e.g. user logged out on the portal);
+  // allow a fresh sync so the marketing-sync redirect can correct it.
+  // A signedIn:false hint is safe to trust without re-syncing.
+  return hint === null || hint.signedIn === true;
 }
 
 export function startMarketingSync(appUrl: string): void {
