@@ -38,8 +38,8 @@ async function fetchCollection<T>(path: string): Promise<T[]> {
   try {
     const res = await fetch(`${API_URL}${path}`, {
       headers: { Accept: "application/json" },
-      // Catalog rarely changes; cache and refresh in the background.
-      next: { revalidate: 300 },
+      // Disabled cache so admin updates show immediately
+      cache: "no-store",
     });
     if (!res.ok) return [];
     const json = (await res.json()) as { data?: T[] };
@@ -65,7 +65,7 @@ export async function getStats(): Promise<PublicStats> {
   try {
     const res = await fetch(`${API_URL}/public/stats`, {
       headers: { Accept: "application/json" },
-      next: { revalidate: 300 },
+      cache: "no-store",
     });
     if (!res.ok) return { couples: 0 };
     const json = (await res.json()) as { data?: Partial<PublicStats> };
