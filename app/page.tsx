@@ -1,6 +1,6 @@
+import Image from "next/image";
 import Header from "./components/Header";
 import TemplatePreview from "./components/TemplatePreview";
-import Image from "next/image";
 import {
   featuredPackageId,
   formatPrice,
@@ -74,7 +74,6 @@ const STEPS = [
     desc: "Customise your digital invitation, track RSVPs, plan seating, and log gifts.",
   },
 ];
-
 
 function titleCase(value?: string): string {
   if (!value) return "";
@@ -450,7 +449,7 @@ export default async function Home() {
               className="h-auto w-24 object-contain"
             />
             <span className="text-sm text-muted">
-              · Wedding Management Platform
+              · Srolanh Digital Event Management
             </span>
           </div>
           <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted">
